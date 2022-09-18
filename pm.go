@@ -8,7 +8,7 @@ import (
 )
 
 func getPMRoot() string {
-	return "demo"
+	return "demo/packages"
 }
 
 func getHostingServices() ([]string, error) {

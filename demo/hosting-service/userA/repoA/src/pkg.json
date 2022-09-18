@@ -1,0 +1,12 @@
+{
+  "deps": [
+    {
+      "url": "hostA.com",
+      "version": "v0.0.1"
+    },
+    {
+      "url": "hostB.com",
+      "version": "v0.0.1"
+    }
+  ]
+}
