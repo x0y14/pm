@@ -41,7 +41,7 @@ func GetGitHubReleases(author, repoName string) ([]*Release, error) {
 				TarGzUrl: gRelease.TarballUrl,
 			})
 		}
-		resp.Body.Close()
+		_ = resp.Body.Close()
 	}
 
 	return releases, nil
@@ -124,12 +124,6 @@ func extractFilesFromTarGz(tarGzReader io.Reader, repoAuthorDirPath string, repo
 				return fmt.Errorf("extractTarGz: Close() failed: %v", err)
 			}
 
-			//if strings.Contains(header.Name, "pkg.json") {
-			//	j, err := os.ReadFile(tempInstallDir)
-			//	if err != nil {
-			//		return fmt.Errorf("failed to read file: %v", err)
-			//	}
-			//}
 		case tar.TypeXGlobalHeader:
 			continue
 
