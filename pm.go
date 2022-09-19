@@ -126,7 +126,7 @@ func getRepositories(hostingService, author string) ([]*Repository, error) {
 	return repos, nil
 }
 
-func GetDownloadedRepositories() ([]*Repository, error) {
+func GetInstalledRepositories() ([]*Repository, error) {
 	hostingServices, err := getHostingServices()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get hosting service list: %v", err)
@@ -142,7 +142,7 @@ func GetDownloadedRepositories() ([]*Repository, error) {
 		for _, author := range authors {
 			repos, err := getRepositories(hostingService, author)
 			if err != nil {
-				return nil, fmt.Errorf("failed to get repositories of %s/%s: %v", hostingService, author, err)
+				return nil, fmt.Errorf("failed to get installed repositories of %s/%s: %v", hostingService, author, err)
 			}
 			allRepo = append(allRepo, repos...)
 		}

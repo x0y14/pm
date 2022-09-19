@@ -67,7 +67,7 @@ func TestGetRepositories(t *testing.T) {
 }
 
 func TestGetDownloadedRepositories(t *testing.T) {
-	repos, err := GetDownloadedRepositories()
+	repos, err := GetInstalledRepositories()
 	if err != nil {
 		t.Fatalf("failed to get downloaded repositories: %v", err)
 	}
