@@ -2,6 +2,7 @@ package pm
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -63,5 +64,33 @@ func TestGetRepositories(t *testing.T) {
 			}
 		}
 	}
+}
 
+func TestGetDownloadedRepositories(t *testing.T) {
+	repos, err := GetDownloadedRepositories()
+	if err != nil {
+		t.Fatalf("failed to get downloaded repositories: %v", err)
+	}
+
+	assert.Equal(t, []*Repository{
+		{
+			Host:    "github.com",
+			Author:  "user1",
+			Name:    "repo1",
+			Version: "v0.0.1",
+			Deps: []*Dependencies{
+				{
+					Url:     "host1.com",
+					Version: "v0.0.1",
+				},
+			},
+		},
+		{
+			Host:    "github.com",
+			Author:  "user2",
+			Name:    "repo2",
+			Version: "v1.2.1",
+			Deps:    []*Dependencies{},
+		},
+	}, repos)
 }
