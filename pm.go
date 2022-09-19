@@ -150,3 +150,29 @@ func GetInstalledRepositories() ([]*Repository, error) {
 
 	return allRepo, nil
 }
+
+// IsRepositoryInstalled return version, installed
+func IsRepositoryInstalled(hostingService, author, repoName string) (string, bool) {
+	hostDir := filepath.Join(getPMRoot(), hostingService)
+	if !IsFileExists(hostDir) {
+		return "", false
+	}
+
+	authorDir := filepath.Join(hostDir, author)
+	if !IsFileExists(authorDir) {
+		return "", false
+	}
+
+	repos, err := getRepositories(hostingService, author)
+	if err != nil {
+		return "", false
+	}
+
+	for _, repo := range repos {
+		if repo.Name == repoName {
+			return repo.Version, true
+		}
+	}
+
+	return "", false
+}
