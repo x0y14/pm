@@ -99,6 +99,7 @@ func getRepository(hostingService, author, repoNameVersion string) (*Repository,
 	repoVersion := nameVersion[1]
 
 	return &Repository{
+		Host:    hostingService,
 		Author:  author,
 		Name:    repoName,
 		Version: repoVersion,
@@ -123,4 +124,29 @@ func getRepositories(hostingService, author string) ([]*Repository, error) {
 	}
 
 	return repos, nil
+}
+
+func GetDownloadedRepositories() ([]*Repository, error) {
+	hostingServices, err := getHostingServices()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get hosting service list: %v", err)
+	}
+
+	var allRepo []*Repository
+
+	for _, hostingService := range hostingServices {
+		authors, err := getRepositoryAuthors(hostingService)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get repository authors: %v", err)
+		}
+		for _, author := range authors {
+			repos, err := getRepositories(hostingService, author)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get repositories of %s/%s: %v", hostingService, author, err)
+			}
+			allRepo = append(allRepo, repos...)
+		}
+	}
+
+	return allRepo, nil
 }
