@@ -3,13 +3,75 @@ package pm
 import (
 	"archive/tar"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 )
 
-//func getTarGzReader()
+func GetGitHubReleases(author, repoName string) ([]*Release, error) {
+	var githubReleases []*GithubRelease
+	var releases []*Release
+	for i := 1; i < 100; i++ {
+		url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases?page=%d", author, repoName, i)
+
+		resp, err := http.Get(url)
+		if err != nil {
+			return nil, err
+		}
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(bodyBytes, &githubReleases)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(githubReleases) == 0 {
+			break
+		}
+
+		for _, gRelease := range githubReleases {
+			releases = append(releases, &Release{
+				TagName:  gRelease.TagName,
+				TarGzUrl: gRelease.TarballUrl,
+			})
+		}
+		resp.Body.Close()
+	}
+
+	return releases, nil
+}
+
+func GetGitHubLatestRelease(author, repoName string) (*Release, error) {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", author, repoName)
+
+	var githubLatestRelease GithubRelease
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(bodyBytes, &githubLatestRelease)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Release{
+		TagName:  githubLatestRelease.TagName,
+		TarGzUrl: githubLatestRelease.TarballUrl,
+	}, nil
+}
 
 // extractFilesFromTarGz repoAuthorDirPathは取り出されたファイルが設置される場所なので
 // PMRoot/host/userで指定すること
